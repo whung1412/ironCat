@@ -1,0 +1,617 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>鐵貓的祕密</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+/* 版面概念：左邊是繪本畫面與故事文字，右邊是一個獨立的提問泡泡；手機上泡泡排在故事下方，永遠不蓋住故事。 */
+:root{
+  --bg:#edf2f5; --surface:#ffffff; --surface-2:#e2eaef; --fg:#1b2631; --muted:#4f5f6b; --line:#c3d0d8;
+  --l1:#1b7f86; --on-l1:#ffffff;
+  --l2:#f0a81c; --on-l2:#2b1d00;
+  --l3:#7b4fc2; --on-l3:#ffffff;
+  --me:#ffe9b8; --on-me:#2b1d00; --focus:#1f63d1; --scene-filter:none;
+  --display:"Huninn","jf open 粉圓","PingFang TC","Microsoft JhengHei","Noto Sans TC",sans-serif;
+  --text:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#101820; --surface:#19232d; --surface-2:#243240; --fg:#eaf1f5; --muted:#a9b9c4; --line:#38495a;
+    --l1:#53c7cd; --on-l1:#06282b; --l2:#f5bb45; --on-l2:#2b1d00; --l3:#b99cf2; --on-l3:#1f1137;
+    --me:#4a3b12; --on-me:#fff1cf; --focus:#8fbcff; --scene-filter:brightness(.88);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#101820; --surface:#19232d; --surface-2:#243240; --fg:#eaf1f5; --muted:#a9b9c4; --line:#38495a;
+  --l1:#53c7cd; --on-l1:#06282b; --l2:#f5bb45; --on-l2:#2b1d00; --l3:#b99cf2; --on-l3:#1f1137;
+  --me:#4a3b12; --on-me:#fff1cf; --focus:#8fbcff; --scene-filter:brightness(.88);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--fg);
+  font:400 19px/1.6 var(--text);
+  padding-left:max(16px, env(safe-area-inset-left, 0px));
+  padding-right:max(16px, env(safe-area-inset-right, 0px));
+  padding-block:0;
+}
+button,textarea{font-family:inherit}
+:focus-visible{outline:4px solid var(--focus);outline-offset:3px}
+.wrap{max-width:1180px;margin:0 auto;padding-top:16px;padding-bottom:28px}
+
+/* 標題列 */
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand svg{width:40px;height:40px;color:var(--fg);flex:none}
+h1{margin:0;font:400 clamp(28px,4.4vw,38px)/1.2 var(--display);letter-spacing:.04em}
+.count{font:400 20px/1 var(--display);background:var(--surface);border:3px solid var(--line);border-radius:999px;padding:10px 18px;white-space:nowrap}
+
+/* 主體 */
+.book{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:34px;align-items:start}
+.left,.ask{min-width:0}
+.stage{border-radius:22px;overflow:hidden;border:3px solid var(--line);background:var(--surface);aspect-ratio:5/3;filter:var(--scene-filter)}
+.stage svg{display:block;width:100%;height:100%}
+.fxline{min-height:2em;margin:10px 4px 0;font-size:17px;color:var(--muted)}
+.fxline b{font-weight:500;color:var(--fg)}
+.story{margin-top:6px;background:var(--surface);border:3px solid var(--line);border-radius:22px;padding:22px 24px}
+.story p{margin:0;font:400 clamp(23px,2.7vw,28px)/1.8 var(--display);letter-spacing:.03em;text-wrap:pretty}
+.read{margin-top:16px}
+
+/* 按鈕 */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:56px;padding:0 24px;border-radius:999px;border:3px solid var(--line);background:var(--surface-2);color:var(--fg);font-size:20px;font-weight:500;cursor:pointer}
+.btn svg{width:26px;height:26px;flex:none}
+.btn:hover:not(:disabled){border-color:var(--fg)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.primary{background:var(--lv);border-color:var(--lv);color:var(--on-lv)}
+.btn.primary:hover:not(:disabled){border-color:var(--fg)}
+.btn.on{background:var(--l2);border-color:var(--l2);color:var(--on-l2)}
+
+/* 提問泡泡 */
+.bubble{position:relative;--lv:var(--l1);--on-lv:var(--on-l1);background:var(--surface);border:4px solid var(--lv);border-radius:28px;padding:22px 22px 24px;display:flex;flex-direction:column;gap:16px}
+.bubble::before{content:"";position:absolute;left:-15px;top:46px;width:26px;height:26px;background:var(--surface);border-left:4px solid var(--lv);border-bottom:4px solid var(--lv);transform:rotate(45deg)}
+.bubble h2{margin:0;font:400 22px/1.3 var(--display)}
+.levels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;border:0;padding:0;margin:0}
+.lv{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 4px 9px;min-height:92px;border-radius:18px;border:3px solid var(--line);background:var(--surface-2);color:var(--fg);cursor:pointer;text-align:center}
+.lv svg{width:26px;height:26px;color:var(--c)}
+.lv .n{font:400 21px/1.2 var(--display)}
+.lv .s{font-size:14px;line-height:1.2;color:var(--muted)}
+.lv .st{font-size:14px;letter-spacing:2px;line-height:1;color:var(--muted)}
+.lv[aria-pressed="true"]{background:var(--c);border-color:var(--c);color:var(--on)}
+.lv[aria-pressed="true"] svg,.lv[aria-pressed="true"] .s,.lv[aria-pressed="true"] .st{color:var(--on)}
+.q{margin:0;font:400 clamp(23px,2.5vw,27px)/1.6 var(--display);letter-spacing:.03em;text-wrap:pretty}
+.thread{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.thread:empty{display:none}
+.msg{max-width:94%;padding:12px 16px;border-radius:20px;font-size:20px}
+.msg p{margin:0}
+.msg .tag{display:block;font-size:14px;color:inherit;opacity:.75;margin-bottom:2px}
+.me{margin-left:auto;background:var(--me);color:var(--on-me);border-bottom-right-radius:6px}
+.bot{background:var(--surface-2);border-bottom-left-radius:6px}
+.bot .tag{color:var(--muted);opacity:1}
+.dots{display:inline-flex;gap:6px;padding:6px 2px}
+.dots i{width:10px;height:10px;border-radius:50%;background:var(--muted);animation:blink 1s infinite}
+.dots i:nth-child(2){animation-delay:.2s}.dots i:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,100%{opacity:.25}50%{opacity:1}}
+.form{display:flex;flex-direction:column;gap:10px}
+.form label{font-size:17px;color:var(--muted)}
+textarea{width:100%;min-height:88px;resize:vertical;padding:12px 16px;font-size:21px;line-height:1.5;color:var(--fg);background:var(--bg);border:3px solid var(--line);border-radius:18px}
+textarea:focus-visible{border-color:var(--lv);outline-color:var(--focus)}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.note{margin:0;font-size:16px;line-height:1.5;color:var(--muted)}
+.hint{min-height:1.5em}
+
+/* 翻頁列 */
+.pager{position:sticky;bottom:0;z-index:5;margin-left:calc(-1 * max(16px, env(safe-area-inset-left, 0px)));margin-right:calc(-1 * max(16px, env(safe-area-inset-right, 0px)));padding:10px max(16px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));background:var(--bg);border-top:3px solid var(--line)}
+.pager-in{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:10px}
+.pager .btn{min-width:132px;font-family:var(--display);font-weight:400;font-size:22px}
+.pages{flex:1;display:flex;justify-content:center;flex-wrap:wrap}
+.dot{width:36px;height:44px;border:0;background:none;padding:0;cursor:pointer;display:grid;place-items:center}
+.dot::before{content:"";width:14px;height:14px;border-radius:50%;background:var(--line);border:2px solid var(--muted)}
+.dot[aria-current="page"]::before{width:20px;height:20px;background:var(--l2);border-color:var(--fg)}
+
+/* 場景與動畫（只在畫面內，不遮住文字，也不會擋住操作） */
+.scene [data-fx]{opacity:0;transition:opacity .6s ease;pointer-events:none}
+.scene [data-fx].on{opacity:.55}
+.scene.fx-rain [data-fx="rain"],.scene.fx-shine [data-fx="shine"],.scene.fx-dim [data-fx="dim"],.scene.fx-sparkle [data-fx="sparkle"],
+.scene.fx-knock [data-fx="knock"],.scene.fx-sparks [data-fx="sparks"],.scene.fx-rust [data-fx="rust"],.scene.fx-sun [data-fx="sun"],
+.scene.fx-night [data-fx="night"],.scene.fx-eyes [data-fx="eyes"]{opacity:1}
+.scene.fx-dim [data-fx="shine"]{opacity:.8}
+.rain line{transform:translate(0,var(--y,0px))}
+.scene.fx-rain .rain line{animation:fall 1.1s linear infinite}
+@keyframes fall{from{transform:translate(0,-60px)}to{transform:translate(-40px,540px)}}
+.drops circle{transform:translate(0,0)}
+.scene.fx-rain .drops circle{animation:slide 1.6s ease-in infinite}
+@keyframes slide{from{transform:translate(0,0)}to{transform:translate(0,46px)}}
+.band{transform:translateX(0) skewX(-18deg)}
+.scene.fx-shine .band,.scene.fx-dim .band{animation:sweep 1.8s ease-in-out 3}
+@keyframes sweep{from{transform:translateX(0) skewX(-18deg)}to{transform:translateX(300px) skewX(-18deg)}}
+.tw{transform-box:fill-box;transform-origin:center}
+.scene.fx-sparkle .tw{animation:twinkle 1.5s ease-in-out infinite}
+@keyframes twinkle{0%,100%{transform:scale(.25);opacity:.3}50%{transform:scale(1.15);opacity:1}}
+.eyeglow{transform-box:fill-box;transform-origin:center}
+.scene.fx-eyes .eyeglow{animation:pulse 1.3s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(.8);opacity:1}50%{transform:scale(1.25);opacity:.45}}
+.ring{transform-box:fill-box;transform-origin:center;transform:scale(.4);opacity:0}
+.scene.fx-knock .ring{animation:ring 1.5s ease-out infinite}
+@keyframes ring{0%{transform:scale(.4);opacity:.9}100%{transform:scale(2.8);opacity:0}}
+.ding{transform-box:fill-box;transform-origin:center}
+.scene.fx-knock .ding{animation:ding 1.5s ease-out infinite}
+@keyframes ding{0%{transform:translateY(10px);opacity:0}25%{opacity:1}100%{transform:translateY(-26px);opacity:0}}
+.spark{transform:translate(0,0)}
+.scene.fx-sparks .spark{animation:spark 1.1s ease-out infinite}
+@keyframes spark{0%{transform:translate(0,0);opacity:1}100%{transform:translate(var(--dx),var(--dy));opacity:0}}
+.rays{animation:none}
+.scene.fx-sun .rays{animation:breathe 3s ease-in-out infinite}
+@keyframes breathe{50%{opacity:.6}}
+
+@media (max-width:900px){
+  .book{grid-template-columns:minmax(0,1fr);gap:26px}
+  .bubble::before{left:44px;top:-15px;border-bottom:0;border-top:4px solid var(--lv)}
+}
+@media (max-width:520px){
+  body{font-size:18px}
+  .count{font-size:17px;padding:8px 14px}
+  .pager .btn{min-width:0;padding:0 16px;font-size:20px}
+  .bubble{padding:18px 16px 20px}
+  .story{padding:18px 18px}
+  .dot{width:30px}
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .scene.fx-sparkle .tw{transform:scale(.9)}
+  .scene.fx-eyes .eyeglow{transform:scale(1)}
+  .scene.fx-knock .ring{transform:scale(1.4);opacity:.6}
+  .scene.fx-sparks .spark{transform:translate(var(--dx),var(--dy))}
+  .scene.fx-shine .band,.scene.fx-dim .band{transform:translateX(150px) skewX(-18deg)}
+}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M5 5l8 7h14l8-7v18a15 15 0 0 1-30 0z" fill="currentColor"/><ellipse cx="14" cy="22" rx="2.6" ry="3.6" fill="var(--bg)"/><ellipse cx="26" cy="22" rx="2.6" ry="3.6" fill="var(--bg)"/></svg>
+      <h1>鐵貓的祕密</h1>
+    </div>
+    <div class="count" aria-live="polite">第 <span id="pageNow">1</span> 頁 ／ 共 <span id="pageAll">6</span> 頁</div>
+  </header>
+
+  <main class="book">
+    <section class="left" aria-label="故事">
+      <div class="stage"><svg id="scene" class="scene" viewBox="0 0 800 480" role="img" aria-label=""></svg></div>
+      <div class="fxline" id="fxLine" aria-live="polite"></div>
+      <article class="story">
+        <p id="storyText"></p>
+        <button class="btn read" id="readBtn" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9zM16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span id="readLabel">唸給我聽</span>
+        </button>
+      </article>
+    </section>
+
+    <aside class="ask" aria-label="提問泡泡">
+      <div class="bubble" id="bubble">
+        <h2>想一想，說一說</h2>
+        <fieldset class="levels" id="levels" aria-label="選擇問題難度" style="min-width:0">
+          <button class="lv" type="button" data-level="1" style="--c:var(--l1);--on:var(--on-l1)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.2" fill="currentColor"/></svg>
+            <span class="n">看一看</span><span class="s">外觀描述</span><span class="st" aria-hidden="true">★</span>
+          </button>
+          <button class="lv" type="button" data-level="2" style="--c:var(--l2);--on:var(--on-l2)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="n">想一想</span><span class="s">為什麼呢</span><span class="st" aria-hidden="true">★★</span>
+          </button>
+          <button class="lv" type="button" data-level="3" style="--c:var(--l3);--on:var(--on-l3)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4z" fill="currentColor"/></svg>
+            <span class="n">想像看看</span><span class="s">美感與創意</span><span class="st" aria-hidden="true">★★★</span>
+          </button>
+        </fieldset>
+        <p class="q" id="qText"></p>
+        <ol class="thread" id="thread" aria-live="polite"></ol>
+        <form class="form" id="ansForm" autocomplete="off">
+          <label for="ans">你的想法</label>
+          <textarea id="ans" placeholder="把想到的寫下來，或按麥克風說說看"></textarea>
+          <div class="row">
+            <button class="btn" id="micBtn" type="button" hidden aria-pressed="false">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span id="micLabel">說說看</span>
+            </button>
+            <button class="btn primary" id="sendBtn" type="submit">送出想法</button>
+          </div>
+          <p class="note hint" id="hint" aria-live="polite"></p>
+          <p class="note">不想回答也沒關係，直接按「下一頁」就能繼續讀故事。</p>
+        </form>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<nav class="pager" aria-label="翻頁">
+  <div class="pager-in">
+    <button class="btn" id="prevBtn" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>上一頁
+    </button>
+    <div class="pages" id="pages"></div>
+    <button class="btn primary" id="nextBtn" type="button" style="--lv:var(--l2);--on-lv:var(--on-l2)">
+      <span id="nextLabel">下一頁</span>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+</nav>
+
+<script>
+(function(){
+'use strict';
+var $=function(s){return document.querySelector(s)};
+
+/* ---------- 故事內容 ---------- */
+var PAGES=[
+ {time:'day',door:'open',cloth:true,boy:{x:130,pose:'stand',mood:'smile',look:3},
+  alt:'小宇站在工作室門口，架子上有顏料和刷子，窗邊有一個蓋著白布的東西。',
+  text:'放學後，小宇來到藝術家阿姨的工作室。她笑著說：「我出去買點東西，你可以慢慢看。」工作室裡有好多顏料、刷子和罐子。窗邊有個東西蓋著一塊白布，靜靜地待著。',
+  q:{1:'工作室裡有哪些東西？說說看你看到的顏色和形狀。',
+     2:'為什麼藝術家的工作室裡，會有這麼多顏料和工具呢？',
+     3:'如果你是藝術家，你想在這間工作室裡做出什麼樣的作品？'}},
+ {time:'day',door:'closed',boy:{x:470,pose:'wow',mood:'wow',look:3},
+  alt:'白布掉在地上，窗邊的檯子上坐著一隻黑色的鐵貓，小宇張開手臂，露出驚訝的表情。',
+  text:'小宇踮著腳走過去，輕輕拉開白布。哇！布底下藏著一隻鐵貓！牠坐得直直的，好像正在看著窗外。',
+  q:{1:'鐵貓看起來是什麼顏色、什麼形狀？牠身上有哪些部分？',
+     2:'為什麼藝術家要把鐵貓放在窗戶旁邊呢？',
+     3:'你覺得鐵貓看起來像是在安靜地等待，還是正準備悄悄冒險？'}},
+ {time:'day',door:'closed',boy:{x:505,pose:'touch',mood:'smile',look:3},
+  alt:'小宇伸出手，輕輕摸著鐵貓的背。',
+  text:'小宇伸出手，慢慢碰了碰鐵貓的背。鐵貓不會動，也不會喵喵叫，但牠給了小宇一種很特別的感覺。',
+  q:{1:'摸摸看鐵貓，你覺得牠的表面是什麼感覺？',
+     2:'為什麼鐵貓摸起來，和家裡毛茸茸的小貓不一樣呢？',
+     3:'如果鐵貓的表面是一首歌，你覺得會是什麼聲音或節奏？'}},
+ {time:'gold',door:'closed',shadow:true,boy:{x:470,pose:'point',mood:'wow',look:-3},
+  alt:'傍晚金黃色的陽光照進窗戶，鐵貓在牆上拉出一個又大又長的影子，小宇指著影子。',
+  text:'太陽慢慢往下沉，金黃色的光從窗戶照進來。鐵貓的影子在牆上越拉越長，像另一隻大大的貓。',
+  q:{1:'陽光照到鐵貓身上，哪裡亮亮的？哪裡暗暗的？',
+     2:'為什麼鐵貓的影子，在牆上變得又大又長呢？',
+     3:'如果影子也是一件藝術品，你覺得鐵貓的影子像什麼？'}},
+ {time:'night',door:'closed',eyesOn:true,boy:{x:515,pose:'lean',mood:'calm',look:3,tilt:6},
+  alt:'夜晚，月亮掛在窗外，小宇靠近鐵貓，鐵貓的眼睛好像有一點亮光。',
+  text:'天色漸漸暗了，月亮升起來。小宇看著鐵貓的眼睛，好像有一點點亮光在裡面閃呀閃。',
+  q:{1:'月光下的鐵貓，和白天比起來，哪裡不一樣了？',
+     2:'為什麼天黑以後，鐵貓的眼睛好像會發光呢？',
+     3:'如果鐵貓在夜裡偷偷動起來，你覺得牠會跳出什麼樣的舞？'}},
+ {time:'night',door:'open',artist:true,eyesOn:true,boy:{x:520,pose:'wave',mood:'smile',look:-3},
+  alt:'藝術家阿姨回來了，站在門口，小宇對她揮手，鐵貓的眼睛像是眨了一下。',
+  text:'門嘎吱一聲開了，藝術家阿姨回來了。小宇小聲地說：「我發現了一個祕密。」阿姨笑了笑，沒有說破。鐵貓呢？牠好像也悄悄眨了一下眼睛。',
+  q:{1:'藝術家阿姨穿著什麼？她看起來心情怎麼樣？',
+     2:'你覺得藝術家為什麼要做一隻鐵貓，而不是畫一隻貓呢？',
+     3:'如果你也要做一件藝術品送給朋友，它會是什麼樣子？你想用什麼材料？'}}
+];
+var LEVELS={1:{name:'看一看',c:'--l1',on:'--on-l1'},2:{name:'想一想',c:'--l2',on:'--on-l2'},3:{name:'想像看看',c:'--l3',on:'--on-l3'}};
+
+/* ---------- 關鍵字回饋 ---------- */
+var FX_NAMES={rain:'下雨了',shine:'金屬反光',dim:'燈光變暗，看見輪廓',sparkle:'閃閃發亮',eyes:'眼睛亮起來',knock:'敲一敲，叮',sparks:'鐵的火花',rust:'雨水讓鐵慢慢變舊',sun:'陽光照進來',night:'夜晚來了'};
+var FX_LIST=Object.keys(FX_NAMES);
+var RULES=[
+ {k:/不知道|不曉得|想不到|不確定|不會/,say:'沒關係，慢慢想也很棒！你可以先看看圖片，告訴我你最先注意到的地方，好嗎？',fx:[]},
+ {k:/冰|冷|涼/,say:'你發現鐵貓摸起來冰冰的！如果外面下雨了，你覺得牠會有什麼變化呢？',fx:['rain','shine']},
+ {k:/黑|烏/,say:'你觀察到牠是黑色的！你覺得為什麼藝術家會選擇這個顏色呢？',fx:['dim']},
+ {k:/硬|堅|結實|很重|沉重/,say:'你發現牠硬硬的、很結實！如果用手輕輕敲一敲，你覺得會發出什麼聲音呢？',fx:['knock']},
+ {k:/月|晚上|夜|星星|星空/,say:'你想到夜晚了！月光下的鐵貓，會不會和白天看起來不一樣呢？',fx:['night','eyes']},
+ {k:/滑|亮|閃|反光|光澤|發光/,say:'你注意到牠亮亮的！如果把燈移到另一邊，牠身上的亮光會跑到哪裡去呢？',fx:['shine','sparkle']},
+ {k:/雨|鏽|濕|溼|水/,say:'你想到雨水和生鏽的變化！鐵貓在雨裡待很久，顏色和樣子會變成什麼呢？',fx:['rain','rust']},
+ {k:/鐵|金屬|鋼|銅/,say:'你發現牠是鐵做的！你覺得藝術家是怎麼把硬硬的鐵，變成一隻貓的呢？',fx:['sparks']},
+ {k:/眼睛|眼|瞪/,say:'你注意到牠的眼睛了！你覺得牠正在看著什麼呢？',fx:['eyes']},
+ {k:/尾巴|鬍鬚|鬍子|耳朵|爪/,say:'你觀察到牠的小細節！如果只能留下一個部分，你覺得哪一個最能讓人認出這是貓呢？',fx:['sparkle']},
+ {k:/動|活|走|跳|跑|醒|飛/,say:'你想像牠動起來了！牠會先去哪裡探險呢？',fx:['eyes','sparkle']},
+ {k:/太陽|陽光|白天|金黃/,say:'你想到陽光了！陽光照在鐵貓身上，牠的影子會跑到哪個方向呢？',fx:['sun','shine']},
+ {k:/影子|陰影/,say:'你注意到影子了！如果影子會說話，牠會對鐵貓說什麼呢？',fx:['dim']},
+ {k:/紅|黃|藍|綠|紫|橘|粉|白|灰|彩|顏色|顏料/,say:'你看見好多顏色！哪一種顏色最讓你有感覺？它讓你想到什麼呢？',fx:['sparkle']},
+ {k:/開心|快樂|可愛|漂亮|美|好看|喜歡|酷|帥|溫暖/,say:'你有很棒的感覺！是牠的哪個地方，讓你有這種感覺呢？',fx:['sparkle']},
+ {k:/安靜|孤單|孤獨|寂寞|害怕|怕|神秘|祕密|秘密/,say:'你感覺到一種安靜又神祕的氣氛！如果鐵貓會說話，你覺得牠最想悄悄告訴你什麼祕密呢？',fx:['eyes']},
+ {k:/貓|喵/,say:'你說到貓了！鐵貓和真的貓，有哪裡一樣、哪裡不一樣呢？',fx:['sparkle']},
+ {k:/因為|所以|因此/,say:'你說出了自己的想法和原因！如果情況換一下，你覺得結果會有什麼不同呢？',fx:['sparkle']}
+];
+var GENERIC=['這個想法很有趣！可以再多告訴我一點嗎？','謝謝你告訴我！你是怎麼想到的呢？','哇，我很想知道更多！可以再說一點點嗎？'];
+
+function respond(raw){
+  var t=raw.replace(/\s+/g,''),hit=[],i;
+  for(i=0;i<RULES.length;i++){ if(RULES[i].k.test(t)) hit.push(RULES[i]); }
+  if(!hit.length){ var g=GENERIC[state.generic%GENERIC.length]; state.generic++; return {say:g,fx:[]}; }
+  var fx=[]; hit.forEach(function(r){ r.fx.forEach(function(n){ if(fx.indexOf(n)<0) fx.push(n); }); });
+  return {say:hit[0].say,fx:fx.slice(0,3)};
+}
+
+/* ---------- 場景繪圖 ---------- */
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;var t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+var TIMES={
+ day:{sky:['#a6dbf3','#dff3fb'],wall:['#dfebe8','#cadcd7'],floor:'#c99b64',hill:'#8cc57a',lamp:.28,shaft:.2},
+ gold:{sky:['#f0a05a','#fbd8a0'],wall:['#eddac8','#dcc2a8'],floor:'#b8864f',hill:'#9c6b3a',lamp:.4,shaft:.38},
+ night:{sky:['#0e1a36','#294470'],wall:['#6a7f90','#4e6275'],floor:'#6a5540',hill:'#16302f',lamp:.75,shaft:0}
+};
+function defs(T){
+ return '<linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+T.sky[0]+'"/><stop offset="1" stop-color="'+T.sky[1]+'"/></linearGradient>'+
+ '<linearGradient id="wallG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+T.wall[0]+'"/><stop offset="1" stop-color="'+T.wall[1]+'"/></linearGradient>'+
+ '<linearGradient id="ironG" x1="0" y1="0" x2="1" y2="0.2"><stop offset="0" stop-color="#5d6d82"/><stop offset=".5" stop-color="#323d4b"/><stop offset="1" stop-color="#1a212b"/></linearGradient>'+
+ '<linearGradient id="bandG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".85"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>'+
+ '<linearGradient id="shaftG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3c4" stop-opacity=".9"/><stop offset="1" stop-color="#fff3c4" stop-opacity="0"/></linearGradient>'+
+ '<radialGradient id="glowG"><stop offset="0" stop-color="#fff2b0" stop-opacity=".95"/><stop offset="1" stop-color="#fff2b0" stop-opacity="0"/></radialGradient>'+
+ '<radialGradient id="eyeG"><stop offset="0" stop-color="#ffe27a" stop-opacity="1"/><stop offset=".5" stop-color="#ffd24a" stop-opacity=".6"/><stop offset="1" stop-color="#ffd24a" stop-opacity="0"/></radialGradient>'+
+ '<pattern id="brushed" width="6" height="6" patternUnits="userSpaceOnUse"><path d="M0,1H6M0,4H6" stroke="#fff" stroke-opacity=".3" stroke-width=".9"/></pattern>'+
+ '<path id="cBody" d="M-52,0 C-60,-60 -48,-120 -22,-152 L22,-152 C48,-120 60,-60 52,0 Z"/>'+
+ '<ellipse id="cHead" cx="0" cy="-184" rx="48" ry="38"/>'+
+ '<path id="cEarL" d="M-46,-196 L-40,-252 L-10,-218 Z"/>'+
+ '<path id="cEarR" d="M46,-196 L40,-252 L10,-218 Z"/>'+
+ '<path id="cTail" d="M40,-2 C108,4 118,-76 90,-112 L76,-104 C96,-76 88,-22 40,-20 Z"/>'+
+ '<clipPath id="catClip"><use href="#cBody"/><use href="#cHead"/><use href="#cEarL"/><use href="#cEarR"/><use href="#cTail"/></clipPath>';
+}
+function roomSVG(p,T){
+ var night=p.time==='night',s='';
+ s+='<rect width="800" height="335" fill="url(#wallG)"/><rect y="335" width="800" height="145" fill="'+T.floor+'"/>';
+ s+='<rect y="327" width="800" height="9" fill="#000" fill-opacity=".1"/>';
+ s+='<path d="M0,365H800M0,402H800M0,444H800" stroke="#000" stroke-opacity=".09" stroke-width="2"/>';
+ /* 門 */
+ if(p.door==='open'){
+  s+='<rect x="22" y="58" width="120" height="277" fill="#fff4d0"/><rect x="22" y="300" width="120" height="35" fill="#e9d9a8"/>';
+  s+='<path d="M22,335 L142,335 L250,480 L-30,480 Z" fill="#fff4d0" fill-opacity="'+(night?.18:.35)+'"/>';
+  s+='<path d="M142,58 L180,76 L180,330 L142,335 Z" fill="#7a4e32"/><circle cx="170" cy="210" r="5" fill="#e8c26a"/>';
+  s+='<rect x="14" y="50" width="136" height="8" fill="#6b4b2f"/><rect x="14" y="50" width="8" height="286" fill="#6b4b2f"/>';
+ } else {
+  s+='<rect x="22" y="58" width="120" height="277" fill="#8a5a3b"/><rect x="38" y="76" width="88" height="100" rx="4" fill="#7a4e32"/><rect x="38" y="194" width="88" height="120" rx="4" fill="#7a4e32"/><circle cx="124" cy="200" r="6" fill="#e8c26a"/>';
+  s+='<rect x="14" y="50" width="136" height="8" fill="#6b4b2f"/><rect x="14" y="50" width="8" height="286" fill="#6b4b2f"/><rect x="142" y="50" width="8" height="286" fill="#6b4b2f"/>';
+ }
+ /* 窗戶與窗外 */
+ s+='<rect x="510" y="48" width="240" height="196" fill="url(#skyG)"/>';
+ s+='<path d="M510,205 Q580,168 640,192 T750,182 L750,244 L510,244 Z" fill="'+T.hill+'"/>';
+ if(p.time==='day'){ s+='<circle cx="585" cy="98" r="30" fill="#fff6c2" fill-opacity=".6"/><circle cx="585" cy="98" r="20" fill="#ffe27a"/>'; }
+ if(p.time==='gold'){ s+='<circle cx="610" cy="186" r="34" fill="#fff0c0" fill-opacity=".55"/><circle cx="610" cy="186" r="24" fill="#ffd27a"/>'; }
+ var moon='<circle cx="600" cy="102" r="20" fill="#f4f1de"/><circle cx="593" cy="96" r="4" fill="#ddd9c0"/><circle cx="607" cy="109" r="3" fill="#ddd9c0"/><circle cx="690" cy="84" r="2" fill="#fff"/><circle cx="535" cy="120" r="2" fill="#fff"/><circle cx="720" cy="140" r="2.4" fill="#fff"/><circle cx="660" cy="70" r="1.8" fill="#fff"/>';
+ if(night){ s+=moon; } else { s+='<g data-fx="night"><rect x="510" y="48" width="240" height="196" fill="#0e1a36" fill-opacity=".88"/>'+moon+'</g>'; }
+ s+='<path d="M630,48V244M510,146H750" stroke="#f3f7f9" stroke-width="6"/><rect x="510" y="48" width="240" height="196" fill="none" stroke="#f3f7f9" stroke-width="9"/><rect x="498" y="244" width="264" height="12" rx="3" fill="#e6edf0"/>';
+ if(T.shaft){ s+='<path d="M520,246 L750,246 L560,456 L250,456 Z" fill="url(#shaftG)" fill-opacity="'+T.shaft+'"/>'; }
+ /* 架子與顏料 */
+ s+='<rect x="175" y="168" width="220" height="9" rx="2" fill="#8b6a4a"/><rect x="175" y="252" width="220" height="9" rx="2" fill="#8b6a4a"/>';
+ s+='<rect x="190" y="130" width="34" height="38" rx="3" fill="#e4572e"/><rect x="190" y="126" width="34" height="7" rx="2" fill="#c3cbd2"/><rect x="190" y="142" width="34" height="8" fill="#fff" fill-opacity=".5"/>';
+ s+='<rect x="232" y="138" width="30" height="30" rx="3" fill="#2a9d8f"/><rect x="232" y="134" width="30" height="7" rx="2" fill="#c3cbd2"/>';
+ s+='<rect x="280" y="136" width="30" height="32" rx="4" fill="#bcd3dc" fill-opacity=".85"/><path d="M288,136L284,106M296,136L298,102M304,136L312,108" stroke="#6b4b2f" stroke-width="3" stroke-linecap="round"/><circle cx="284" cy="104" r="4" fill="#f0a81c"/><circle cx="298" cy="100" r="4" fill="#3f6fb5"/><circle cx="312" cy="106" r="4" fill="#9b5de5"/>';
+ s+='<rect x="330" y="156" width="44" height="12" rx="5" fill="#f0a81c"/><rect x="344" y="144" width="36" height="12" rx="5" fill="#9b5de5"/>';
+ s+='<rect x="196" y="214" width="46" height="38" rx="4" fill="#3f6fb5"/><path d="M206,214v16M226,214v22" stroke="#fff" stroke-opacity=".6" stroke-width="4" stroke-linecap="round"/>';
+ s+='<rect x="272" y="240" width="64" height="12" fill="#9b5de5"/><rect x="276" y="228" width="58" height="12" fill="#2a9d8f"/><rect x="270" y="216" width="62" height="12" fill="#f0a81c"/>';
+ s+='<ellipse cx="365" cy="244" rx="18" ry="9" fill="#d9b98a"/><circle cx="373" cy="232" r="7" fill="#d9b98a"/>';
+ /* 牆上的畫 */
+ s+='<rect x="415" y="100" width="90" height="110" fill="#6b4b2f"/><rect x="421" y="106" width="78" height="98" fill="#f6e7b8"/><circle cx="445" cy="132" r="14" fill="#f0a81c"/><path d="M421,204 L421,168 Q445,146 463,172 T499,162 L499,204 Z" fill="#2a9d8f"/><path d="M421,204 L421,186 Q450,176 499,190 L499,204 Z" fill="#3f6fb5"/>';
+ /* 吊燈 */
+ s+='<path d="M400,0V40" stroke="#555" stroke-width="2"/><path d="M370,40H430L418,66H382Z" fill="#f0a81c"/><ellipse cx="400" cy="68" rx="8" ry="6" fill="#fff4b8"/><circle cx="400" cy="72" r="64" fill="url(#glowG)" fill-opacity="'+T.lamp+'"/>';
+ /* 地上的東西 */
+ s+='<ellipse cx="180" cy="458" rx="20" ry="5" fill="#f0a81c" fill-opacity=".85"/><ellipse cx="400" cy="466" rx="24" ry="5" fill="#3f6fb5" fill-opacity=".8"/><ellipse cx="330" cy="472" rx="12" ry="4" fill="#9b5de5" fill-opacity=".8"/>';
+ s+='<rect x="236" y="404" width="40" height="42" rx="4" fill="#e4572e"/><ellipse cx="256" cy="404" rx="20" ry="6" fill="#f2a58f"/><ellipse cx="256" cy="404" rx="15" ry="4" fill="#3f6fb5"/>';
+ s+='<ellipse cx="318" cy="398" rx="30" ry="8" fill="#9a6b3f"/><path d="M296,400L290,446M340,400L346,446M318,404V446" stroke="#7d5632" stroke-width="5" stroke-linecap="round"/><ellipse cx="318" cy="392" rx="22" ry="6" fill="#e8d9b8"/><circle cx="308" cy="391" r="3" fill="#e4572e"/><circle cx="318" cy="393" r="3" fill="#2a9d8f"/><circle cx="328" cy="391" r="3" fill="#3f6fb5"/>';
+ /* 檯座 */
+ s+='<path d="M570,380 L590,366 L720,366 L740,380 Z" fill="#aab4be"/><rect x="570" y="380" width="170" height="75" fill="#8d98a3"/><rect x="570" y="380" width="170" height="8" fill="#000" fill-opacity=".1"/>';
+ if(!p.cloth){ s+='<path d="M548,452 C560,436 592,434 604,444 C616,436 640,446 632,456 C612,464 566,466 548,452 Z" fill="#f3f1ea"/><path d="M575,448 Q590,442 604,452 M600,444 Q612,448 618,456" stroke="#d9d5c8" stroke-width="2" fill="none"/>'; }
+ return s;
+}
+function shadowSVG(){
+ return '<g transform="translate(405,330) scale(.95,1.15)" fill="#241c2e" fill-opacity=".2"><use href="#cTail"/><use href="#cBody"/><use href="#cHead"/><use href="#cEarL"/><use href="#cEarR"/></g>'+
+        '<path d="M575,456 L330,470 L450,480 L650,466 Z" fill="#000" fill-opacity=".14"/>';
+}
+function clothSVG(){
+ return '<g transform="translate(655,374)"><path d="M-74,0 C-80,-60 -64,-130 -54,-162 C-60,-200 -58,-240 -42,-256 L-30,-246 Q0,-262 30,-246 L42,-256 C58,-240 60,-200 54,-162 C64,-130 80,-60 74,0 Q62,10 50,0 Q38,10 26,0 Q14,10 2,0 Q-10,10 -22,0 Q-34,10 -46,0 Q-60,10 -74,0 Z" fill="#f3f1ea"/>'+
+        '<path d="M-30,-8 C-34,-70 -30,-130 -20,-180 M10,-6 C14,-70 12,-130 6,-190 M44,-6 C52,-60 46,-110 38,-160" stroke="#d6d1c2" stroke-width="3" fill="none" stroke-linecap="round"/></g>';
+}
+function catSVG(p){
+ var r=rng(11),d='',i;
+ for(i=0;i<12;i++){ d+='<circle cx="'+Math.round(r()*80-40)+'" cy="'+Math.round(-(18+r()*130))+'" r="'+(2+r()*1.6).toFixed(1)+'" fill="#d6ecff" fill-opacity=".85" style="animation-delay:-'+(r()*1.6).toFixed(2)+'s"/>'; }
+ return '<g transform="translate(655,374)">'+
+ '<use href="#cTail" fill="url(#ironG)"/><use href="#cBody" fill="url(#ironG)"/>'+
+ '<path d="M-48,-30 Q0,-18 48,-30 M-52,-78 Q0,-64 52,-78 M-44,-124 Q0,-112 44,-124" fill="none" stroke="#0f141b" stroke-opacity=".55" stroke-width="2.2"/>'+
+ '<path d="M-14,-104V-4M14,-104V-4" fill="none" stroke="#0f141b" stroke-opacity=".5" stroke-width="2.4"/>'+
+ '<ellipse cx="-26" cy="-6" rx="18" ry="8" fill="#2a3340"/><ellipse cx="26" cy="-6" rx="18" ry="8" fill="#2a3340"/>'+
+ '<circle cx="-44" cy="-30" r="3" fill="#9fb0c0"/><circle cx="44" cy="-30" r="3" fill="#9fb0c0"/><circle cx="-47" cy="-78" r="3" fill="#9fb0c0"/><circle cx="47" cy="-78" r="3" fill="#9fb0c0"/><circle cx="-40" cy="-124" r="3" fill="#9fb0c0"/><circle cx="40" cy="-124" r="3" fill="#9fb0c0"/>'+
+ '<use href="#cEarL" fill="url(#ironG)"/><use href="#cEarR" fill="url(#ironG)"/>'+
+ '<path d="M-38,-206 L-35,-238 L-18,-220 Z M38,-206 L35,-238 L18,-220 Z" fill="#7d8ea2" fill-opacity=".7"/>'+
+ '<use href="#cHead" fill="url(#ironG)"/>'+
+ '<path d="M-34,-154 Q0,-140 34,-154" fill="none" stroke="#0f141b" stroke-opacity=".55" stroke-width="2.2"/>'+
+ '<ellipse cx="-18" cy="-186" rx="8.5" ry="11.5" fill="#d3e9f2"/><ellipse cx="18" cy="-186" rx="8.5" ry="11.5" fill="#d3e9f2"/>'+
+ '<ellipse cx="-18" cy="-186" rx="2.8" ry="9.5" fill="#12171e"/><ellipse cx="18" cy="-186" rx="2.8" ry="9.5" fill="#12171e"/>'+
+ '<path d="M-5,-172 L5,-172 L0,-165 Z" fill="#a4b5c4"/><path d="M0,-165V-160M0,-160Q-8,-153 -14,-160M0,-160Q8,-153 14,-160" fill="none" stroke="#11161c" stroke-width="2"/>'+
+ '<path d="M-24,-170 L-74,-178M-24,-166 L-76,-166M-24,-162 L-72,-154M24,-170 L74,-178M24,-166 L76,-166M24,-162 L72,-154" stroke="#aab8c4" stroke-width="1.6" stroke-linecap="round"/>'+
+ '<path d="M-40,-20 C-46,-70 -38,-110 -24,-140" fill="none" stroke="#fff" stroke-opacity=".32" stroke-width="6" stroke-linecap="round"/>'+
+ '<path d="M-38,-200 C-30,-212 -18,-218 -6,-220" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width="5" stroke-linecap="round"/>'+
+ '<g data-fx="eyes"'+(p.eyesOn?' class="on"':'')+'><circle class="eyeglow" cx="-18" cy="-186" r="22" fill="url(#eyeG)"/><circle class="eyeglow" cx="18" cy="-186" r="22" fill="url(#eyeG)"/></g>'+
+ '<g clip-path="url(#catClip)">'+
+   '<g data-fx="rust"><rect x="-130" y="-260" width="260" height="270" fill="#b5532a" fill-opacity=".4"/><path d="M-30,-150L-26,-90M10,-120L14,-60M34,-80L38,-30" stroke="#8a3a1a" stroke-width="6" stroke-linecap="round" stroke-opacity=".6"/></g>'+
+   '<g data-fx="dim"><rect x="-130" y="-260" width="260" height="270" fill="url(#brushed)"/></g>'+
+   '<g data-fx="rain" class="drops">'+d+'</g>'+
+   '<g data-fx="shine"><rect class="band" x="-150" y="-262" width="70" height="272" fill="url(#bandG)"/></g>'+
+ '</g>'+
+ '<g data-fx="dim" fill="none" stroke="#c4ecff" stroke-width="3" stroke-linejoin="round" stroke-opacity=".9"><use href="#cBody"/><use href="#cHead"/><use href="#cEarL"/><use href="#cEarR"/><use href="#cTail"/></g>'+
+ '</g>';
+}
+function rainSVG(){
+ var r=rng(7),s='',i;
+ for(i=0;i<46;i++){ var x=Math.round(r()*860-30),y=Math.round(r()*470),dl=r().toFixed(2),ln=18+Math.round(r()*16); s+='<line x1="'+x+'" y1="0" x2="'+(x-6)+'" y2="'+ln+'" style="--y:'+y+'px;animation-delay:-'+dl+'s"/>'; }
+ return '<g data-fx="rain" class="rain" stroke="#5f9fe0" stroke-width="2.2" stroke-linecap="round" stroke-opacity=".7">'+s+'</g>';
+}
+function sparkleSVG(){
+ var pts=[[560,120],[700,96],[745,206],[610,262],[724,322],[470,150],[335,112],[525,300],[660,66],[600,350]],s='',i;
+ for(i=0;i<pts.length;i++){ s+='<g transform="translate('+pts[i][0]+','+pts[i][1]+')"><path class="tw" style="animation-delay:-'+(i*0.17).toFixed(2)+'s" d="M0,-13L3.4,-3.4L13,0L3.4,3.4L0,13L-3.4,3.4L-13,0L-3.4,-3.4Z" fill="#fff7b0" stroke="#f0a81c" stroke-width="1.5"/></g>'; }
+ return '<g data-fx="sparkle">'+s+'</g>';
+}
+function knockSVG(){
+ return '<g data-fx="knock"><g fill="none" stroke="#fff" stroke-width="3.5"><circle class="ring" cx="655" cy="290" r="40"/><circle class="ring" cx="655" cy="290" r="40" style="animation-delay:.5s"/><circle class="ring" cx="655" cy="290" r="40" style="animation-delay:1s"/></g>'+
+ '<text class="ding" x="716" y="238" font-size="36" fill="#fff" stroke="#3b4a5a" stroke-width="1.6" paint-order="stroke" style="font-family:var(--display)">叮～</text></g>';
+}
+function sparksSVG(){
+ var r=rng(23),s='',i;
+ for(i=0;i<14;i++){ var a=r()*Math.PI*2,dist=50+r()*70; s+='<circle class="spark" cx="655" cy="300" r="'+(2+r()*2).toFixed(1)+'" fill="'+(i%2?'#ffb43a':'#ff7a2a')+'" style="--dx:'+Math.round(Math.cos(a)*dist)+'px;--dy:'+Math.round(Math.sin(a)*dist-10)+'px;animation-delay:-'+(r()*1.1).toFixed(2)+'s"/>'; }
+ return '<g data-fx="sparks">'+s+'</g>';
+}
+function sunSVG(){
+ return '<g data-fx="sun"><g class="rays"><path d="M520,60 L750,60 L430,445 L170,445 Z" fill="url(#shaftG)" fill-opacity=".5"/><circle cx="630" cy="120" r="110" fill="url(#glowG)" fill-opacity=".5"/></g></g>';
+}
+function boySVG(b){
+ var sk='#f1c7a0',sh='#2a9d8f';
+ var A={stand:[[-40,-100],[40,-100]],wow:[[-54,-176],[54,-176]],touch:[[-40,-100],[86,-146]],wave:[[-56,-192],[40,-100]],point:[[-74,-178],[40,-100]],lean:[[-38,-104],[44,-112]]}[b.pose];
+ function arm(sx,e){ var mx=sx+(e[0]-sx)*.32,my=-142+(e[1]+142)*.32;
+  return '<path d="M'+sx+',-142 L'+e[0]+','+e[1]+'" stroke="'+sk+'" stroke-width="13" stroke-linecap="round"/><circle cx="'+e[0]+'" cy="'+e[1]+'" r="8" fill="'+sk+'"/><path d="M'+sx+',-142 L'+mx.toFixed(1)+','+my.toFixed(1)+'" stroke="'+sh+'" stroke-width="17" stroke-linecap="round"/>'; }
+ var wow=b.mood==='wow',lk=b.look||0,er=wow?4.6:3.8;
+ var mouth=b.mood==='wow'?'<ellipse cx="0" cy="-153" rx="5" ry="7" fill="#7a2e2e"/>':(b.mood==='calm'?'<path d="M-6,-154H6" stroke="#7a2e2e" stroke-width="2.6" stroke-linecap="round"/>':'<path d="M-9,-156 Q0,-148 9,-156" fill="none" stroke="#7a2e2e" stroke-width="2.6" stroke-linecap="round"/>');
+ var brows=wow?'<path d="M-19,-186 Q-12,-192 -5,-186M5,-186 Q12,-192 19,-186" fill="none" stroke="#2a211d" stroke-width="2.4" stroke-linecap="round"/>':'';
+ return '<g transform="translate('+b.x+',445)">'+
+ '<rect x="-23" y="-74" width="16" height="66" rx="6" fill="'+sk+'"/><rect x="7" y="-74" width="16" height="66" rx="6" fill="'+sk+'"/>'+
+ '<ellipse cx="-15" cy="-6" rx="16" ry="8" fill="#3b4252"/><ellipse cx="15" cy="-6" rx="16" ry="8" fill="#3b4252"/>'+
+ '<rect x="-28" y="-100" width="56" height="36" rx="10" fill="#4a5f8a"/>'+
+ arm(-26,A[0])+arm(26,A[1])+
+ '<rect x="-28" y="-152" width="56" height="60" rx="16" fill="'+sh+'"/><path d="M-28,-124H28" stroke="#fff" stroke-opacity=".35" stroke-width="5"/>'+
+ '<g transform="rotate('+(b.tilt||0)+' 0 -140)">'+
+ '<rect x="-7" y="-152" width="14" height="14" fill="'+sk+'"/><circle cx="0" cy="-172" r="34" fill="'+sk+'"/>'+
+ '<circle cx="-34" cy="-170" r="6" fill="'+sk+'"/><circle cx="34" cy="-170" r="6" fill="'+sk+'"/>'+
+ '<path d="M-35,-174 C-36,-212 36,-212 35,-174 C20,-188 -20,-188 -35,-174 Z" fill="#2a211d"/>'+
+ '<circle cx="'+(-12+lk)+'" cy="-170" r="'+er+'" fill="#1b1b1b"/><circle cx="'+(12+lk)+'" cy="-170" r="'+er+'" fill="#1b1b1b"/>'+
+ '<circle cx="'+(-10.5+lk)+'" cy="-171.5" r="1.4" fill="#fff"/><circle cx="'+(13.5+lk)+'" cy="-171.5" r="1.4" fill="#fff"/>'+
+ '<circle cx="-22" cy="-160" r="6" fill="#f08a8a" fill-opacity=".45"/><circle cx="22" cy="-160" r="6" fill="#f08a8a" fill-opacity=".45"/>'+
+ brows+mouth+'</g></g>';
+}
+function artistSVG(x){
+ var sk='#d7a07a',cl='#e4572e';
+ return '<g transform="translate('+x+',445) scale(1.1)">'+
+ '<ellipse cx="-14" cy="-5" rx="16" ry="7" fill="#2b2b3a"/><ellipse cx="14" cy="-5" rx="16" ry="7" fill="#2b2b3a"/>'+
+ '<rect x="-21" y="-100" width="16" height="94" rx="5" fill="#3c3a4a"/><rect x="5" y="-100" width="16" height="94" rx="5" fill="#3c3a4a"/>'+
+ '<path d="M-28,-160 L-43,-112" stroke="'+cl+'" stroke-width="15" stroke-linecap="round"/><circle cx="-44" cy="-106" r="8" fill="'+sk+'"/>'+
+ '<path d="M28,-160 L56,-206" stroke="'+cl+'" stroke-width="15" stroke-linecap="round"/><circle cx="58" cy="-212" r="8" fill="'+sk+'"/>'+
+ '<path d="M-34,-92 L-30,-170 Q0,-182 30,-170 L34,-92 Z" fill="'+cl+'"/>'+
+ '<circle cx="-14" cy="-140" r="4" fill="#f0a81c"/><circle cx="12" cy="-122" r="4" fill="#3f6fb5"/><circle cx="-6" cy="-108" r="3.4" fill="#2a9d8f"/><rect x="-14" y="-118" width="28" height="18" rx="4" fill="#000" fill-opacity=".12"/>'+
+ '<rect x="-7" y="-176" width="14" height="14" fill="'+sk+'"/><circle cx="0" cy="-198" r="30" fill="'+sk+'"/>'+
+ '<path d="M-31,-200 C-32,-240 32,-240 31,-200 C20,-216 -20,-216 -31,-200 Z" fill="#2d2638"/><circle cx="0" cy="-236" r="13" fill="#2d2638"/>'+
+ '<circle cx="-11" cy="-198" r="7.5" fill="none" stroke="#2d2638" stroke-width="2"/><circle cx="11" cy="-198" r="7.5" fill="none" stroke="#2d2638" stroke-width="2"/><path d="M-3.5,-198H3.5" stroke="#2d2638" stroke-width="2"/>'+
+ '<circle cx="-11" cy="-198" r="2.6" fill="#1b1b1b"/><circle cx="11" cy="-198" r="2.6" fill="#1b1b1b"/>'+
+ '<path d="M-9,-184 Q0,-176 9,-184" fill="none" stroke="#7a2e2e" stroke-width="2.4" stroke-linecap="round"/></g>';
+}
+function sceneSVG(p){
+ var T=TIMES[p.time];
+ return '<defs>'+defs(T)+'</defs>'+roomSVG(p,T)+(p.shadow?shadowSVG():'')+(p.artist?artistSVG(100):'')+boySVG(p.boy)+
+ '<rect data-fx="dim" width="800" height="480" fill="#0a1020" fill-opacity=".62"/>'+
+ '<rect data-fx="night" width="800" height="480" fill="#0f1a3c" fill-opacity=".45"/>'+
+ '<ellipse data-fx="dim" cx="655" cy="262" rx="210" ry="190" fill="url(#glowG)" fill-opacity=".5"/>'+
+ (p.cloth?clothSVG():catSVG(p))+rainSVG()+sparkleSVG()+knockSVG()+sparksSVG()+sunSVG();
+}
+
+/* ---------- 狀態與畫面 ---------- */
+var state={page:0,level:1,threads:{},generic:0,typing:false};
+var scene=$('#scene'),ta=$('#ans'),hintEl=$('#hint'),fxTimer=null,dict=null,dictOn=false,dictBase='';
+
+function hint(t){ hintEl.textContent=t||''; }
+function clearFx(){ FX_LIST.forEach(function(n){ scene.classList.remove('fx-'+n); }); $('#fxLine').textContent=''; }
+function triggerFx(list){
+ if(!list.length) return;
+ FX_LIST.forEach(function(n){ scene.classList.remove('fx-'+n); });
+ void scene.getBoundingClientRect();
+ list.forEach(function(n){ scene.classList.add('fx-'+n); });
+ var line=$('#fxLine'); line.innerHTML=''; var b=document.createElement('b'); b.textContent='畫面變化：'; line.appendChild(b);
+ line.appendChild(document.createTextNode(list.map(function(n){return FX_NAMES[n];}).join('、')));
+ clearTimeout(fxTimer); fxTimer=setTimeout(clearFx,9000);
+}
+function stopVoice(){ try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){} $('#readBtn').classList.remove('on'); $('#readLabel').textContent='唸給我聽'; if(dict&&dictOn){ try{ dict.stop(); }catch(e){} } }
+
+function renderThread(){
+ var ul=$('#thread'); ul.innerHTML='';
+ (state.threads[state.page]||[]).forEach(function(m){
+  var li=document.createElement('li'); li.className='msg '+(m.who==='me'?'me':'bot');
+  var tag=document.createElement('span'); tag.className='tag'; tag.textContent=m.who==='me'?m.tag:'小幫手'; li.appendChild(tag);
+  var p=document.createElement('p'); p.textContent=m.text; li.appendChild(p); ul.appendChild(li);
+ });
+ if(state.typing){ var li2=document.createElement('li'); li2.className='msg bot'; li2.setAttribute('aria-label','小幫手正在想'); li2.innerHTML='<span class="dots"><i></i><i></i><i></i></span>'; ul.appendChild(li2); }
+}
+function renderLevel(){
+ var L=LEVELS[state.level],bub=$('#bubble');
+ bub.style.setProperty('--lv','var('+L.c+')'); bub.style.setProperty('--on-lv','var('+L.on+')');
+ var btns=document.querySelectorAll('.lv'),i;
+ for(i=0;i<btns.length;i++){ btns[i].setAttribute('aria-pressed',String(Number(btns[i].getAttribute('data-level'))===state.level)); }
+ $('#qText').textContent=PAGES[state.page].q[state.level];
+}
+function render(){
+ var p=PAGES[state.page];
+ stopVoice(); clearTimeout(fxTimer); state.typing=false;
+ scene.setAttribute('class','scene'); scene.setAttribute('aria-label',p.alt); scene.innerHTML=sceneSVG(p);
+ $('#fxLine').textContent='';
+ $('#storyText').textContent=p.text;
+ $('#pageNow').textContent=state.page+1; $('#pageAll').textContent=PAGES.length;
+ $('#prevBtn').disabled=state.page===0;
+ $('#nextLabel').textContent=state.page===PAGES.length-1?'再讀一次':'下一頁';
+ var dots=document.querySelectorAll('.dot'),i;
+ for(i=0;i<dots.length;i++){ if(i===state.page) dots[i].setAttribute('aria-current','page'); else dots[i].removeAttribute('aria-current'); }
+ hint(''); renderLevel(); renderThread();
+}
+function go(n){ if(n<0||n>=PAGES.length) return; state.page=n; render(); window.scrollTo({top:0,behavior:'auto'}); }
+
+/* ---------- 事件 ---------- */
+(function build(){
+ var box=$('#pages'),i;
+ for(i=0;i<PAGES.length;i++){ (function(n){ var b=document.createElement('button'); b.type='button'; b.className='dot'; b.setAttribute('aria-label','前往第'+(n+1)+'頁'); b.addEventListener('click',function(){go(n);}); box.appendChild(b); })(i); }
+})();
+$('#prevBtn').addEventListener('click',function(){ go(state.page-1); });
+$('#nextBtn').addEventListener('click',function(){ go(state.page===PAGES.length-1?0:state.page+1); });
+document.querySelectorAll('.lv').forEach(function(b){ b.addEventListener('click',function(){ state.level=Number(b.getAttribute('data-level')); renderLevel(); }); });
+document.addEventListener('keydown',function(e){
+ if(e.target&&(e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT')) return;
+ if(e.key==='ArrowRight') go(Math.min(state.page+1,PAGES.length-1));
+ if(e.key==='ArrowLeft') go(Math.max(state.page-1,0));
+});
+ta.addEventListener('keydown',function(e){
+ if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing&&e.keyCode!==229){ e.preventDefault(); $('#ansForm').requestSubmit(); }
+});
+$('#ansForm').addEventListener('submit',function(e){
+ e.preventDefault();
+ var text=ta.value.trim();
+ if(!text){ hint('想到什麼都可以寫下來，也可以直接翻頁喔。'); return; }
+ if(dictOn&&dict){ try{ dict.stop(); }catch(err){} }
+ var pg=state.page; if(!state.threads[pg]) state.threads[pg]=[];
+ state.threads[pg].push({who:'me',tag:LEVELS[state.level].name,text:text});
+ ta.value=''; dictBase=''; hint('');
+ var res=respond(text); triggerFx(res.fx);
+ state.typing=true; renderThread();
+ setTimeout(function(){
+  if(state.page!==pg) return;
+  state.typing=false; state.threads[pg].push({who:'bot',text:res.say}); renderThread();
+ },550);
+});
+$('#readBtn').addEventListener('click',function(){
+ try{
+  var ss=window.speechSynthesis;
+  if(ss.speaking){ ss.cancel(); $('#readBtn').classList.remove('on'); $('#readLabel').textContent='唸給我聽'; return; }
+  var u=new SpeechSynthesisUtterance(PAGES[state.page].text); u.lang='zh-TW'; u.rate=.9;
+  u.onend=u.onerror=function(){ $('#readBtn').classList.remove('on'); $('#readLabel').textContent='唸給我聽'; };
+  $('#readBtn').classList.add('on'); $('#readLabel').textContent='停止';
+  ss.speak(u);
+ }catch(err){ hint('這個瀏覽器暫時不能唸故事。'); }
+});
+if(!('speechSynthesis' in window)) $('#readBtn').hidden=true;
+
+/* 語音輸入：只有取得 dictation 能力時才顯示麥克風 */
+(async function initDict(){
+ try{
+  if(!(window.claude&&window.claude.use)) return;
+  var d=await window.claude.use('dictation'); if(!d) return;
+  dict=d; $('#micBtn').hidden=false;
+  d.onPartial(function(r){ ta.value=dictBase+r.text; });
+  d.onFinal(function(r){ dictBase=dictBase+r.text; ta.value=dictBase; });
+  d.onState(function(s){
+   dictOn=s.state==='listening';
+   $('#micBtn').classList.toggle('on',dictOn); $('#micBtn').setAttribute('aria-pressed',String(dictOn));
+   $('#micLabel').textContent=dictOn?'說完了':'說說看';
+   hint(dictOn?'我在聽，說完請再按一次。':'');
+  });
+ }catch(err){ dict=null; }
+})();
+$('#micBtn').addEventListener('click',function(){
+ if(!dict) return;
+ if(dictOn){ dict.stop().catch(function(){}); return; }
+ dictBase=ta.value;
+ dict.start().catch(function(err){
+  var c=err&&err.code;
+  hint(c==='not_granted'?'麥克風沒有打開，也可以用打字回答喔。':'再按一次麥克風試試看，或用打字回答。');
+ });
+});
+
+render();
+})();
+</script>
+
+</body></html>
